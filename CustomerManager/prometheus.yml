@@ -1,0 +1,11 @@
+# 控制Prometheus监视哪些资源
+# 默认配置中，有一个名为prometheus的作业，它会收集Prometheus服务器公开的时间序列数据。
+scrape_configs:
+  # 作业名称将作为标签“job=<job_name>`添加到此配置中获取的任何数据。
+  - job_name: 'prometheus'
+    static_configs:
+    # https://stackoverflow.com/questions/54397463/getting-error-get-http-localhost9443-metrics-dial-tcp-127-0-0-19443-conne
+    - targets: ['host.docker.internal:9090']
+  - job_name: 'CustomerApi'
+    static_configs:
+    - targets: ['host.docker.internal:7000']

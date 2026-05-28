@@ -1,0 +1,47 @@
+services:
+  contentplatform.api:
+    image: ${DOCKER_REGISTRY-}contentplatformapi
+    container_name: ContentPlatform.Api
+    build:
+      context: .
+      dockerfile: ContentPlatform.Api/Dockerfile
+    ports:
+      - "5000:8080"
+      - "5001:8081"
+
+  contentplatform.reporting.api:
+    image: ${DOCKER_REGISTRY-}contentplatformreportingapi
+    container_name: ContentPlatform.Reporting.Api
+    build:
+      context: .
+      dockerfile: ContentPlatform.Reporting.Api/Dockerfile
+    ports:
+      - "6000:8080"
+      - "6001:8081"
+ 
+  contentplatform-db:
+    image: postgres:latest
+    container_name: ContentPlatform.Db
+    environment:
+      - POSTGRES_DB=contentplatform
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - ./.containers/data:/var/lib/postgresql/
+    ports:
+      - 5432:5432
+
+  contentplatform-mq:
+    image: rabbitmq:management
+    container_name: ContentPlatform.RabbitMq
+    hostname: contentplatform-mq
+    volumes:
+      - ./.containers/queue/data/:/var/lib/rabbitmq
+      - ./.containers/queue/log/:/var/log/rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+

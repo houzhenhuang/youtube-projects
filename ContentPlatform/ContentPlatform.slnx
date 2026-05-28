@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="../../projects/repos/Curitis.EventBus/src/Curitis.EventBus.RabbitMQ/Curitis.EventBus.RabbitMQ.csproj" />
+    <Project Path="ContentPlatform.Api/ContentPlatform.Api.csproj" />
+    <Project Path="ContentPlatform.Reporting.Api/ContentPlatform.Reporting.Api.csproj" />
+    <Project Path="Contracts/Contracts.csproj" />
+    <Project Path="Shared/Shared.csproj" />
+  </Folder>
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
+</Solution>
