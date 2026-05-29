@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "黄厚镇",
+  "classifications": [
+    "Clean Architecture",
+    "WebApi",
+    "Api",
+    "Swagger"
+  ],
+  "name": "Clean Architecture",
+  "identity": "CleanArchitecture.Template",
+  "shortName": "cleanarch",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "CleanArchitecture",
+  "preferNameDirectory": true
+}
