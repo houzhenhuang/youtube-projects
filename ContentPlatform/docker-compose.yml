@@ -1,5 +1,5 @@
 services:
-  contentplatform.api:
+  contentplatform-api:
     image: ${DOCKER_REGISTRY-}contentplatformapi
     container_name: ContentPlatform.Api
     build:
@@ -9,15 +9,15 @@ services:
       - "5000:8080"
       - "5001:8081"
 
-  contentplatform.reporting.api:
+  contentplatform-reporting-api:
     image: ${DOCKER_REGISTRY-}contentplatformreportingapi
     container_name: ContentPlatform.Reporting.Api
     build:
       context: .
       dockerfile: ContentPlatform.Reporting.Api/Dockerfile
     ports:
-      - "6000:8080"
-      - "6001:8081"
+      - "7000:8080"
+      - "7001:8081"
  
   contentplatform-db:
     image: postgres:latest
@@ -44,4 +44,16 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
-
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: ContentPlatform.Jaeger
+    ports:
+      - 4317:4317
+      - 4318:4318
+      - 16686:16686
+  consul:
+    image: hashicorp/consul:latest
+    container_name: ContentPlatform.Consul
+    ports:
+      - 8500:8500
+      - 8600:8600

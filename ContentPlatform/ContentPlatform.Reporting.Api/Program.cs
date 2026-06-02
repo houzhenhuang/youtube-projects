@@ -1,9 +1,10 @@
 using Carter;
 using ContentPlatform.Reporting.Api.Database;
-using ContentPlatform.Reporting.Api.EventHandlers;
 using ContentPlatform.Reporting.Api.Extensions;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Steeltoe.Discovery.Client;
+using Steeltoe.Discovery.Consul;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,14 +30,14 @@ builder.Services.AddEventBus(options =>
         Uri address = new(builder.Configuration.GetConnectionString("RabbitMQ")!);
         var userInfo = address.UserInfo.Split(":");
 
-        configure.UserName = userInfo[0]; // "guest"; // ÕË»§
-        configure.Password = userInfo[1]; //"guest"; // ÃÜÂë
-        configure.VirtualHost = "/"; // ÐéÄâÖ÷»ú
+        configure.UserName = userInfo[0]; // "guest"; // ï¿½Ë»ï¿½
+        configure.Password = userInfo[1]; //"guest"; // ï¿½ï¿½ï¿½ï¿½
+        configure.VirtualHost = "/"; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         configure.HostName = address.Host; //"contentplatform-mq"; //builder.Configuration.GetConnectionString("RabbitMQ")!;
     });
-
-    options.AddSubscribe<ArticleCreatedEventHandler>();
 });
+
+builder.Services.AddServiceDiscovery(o => o.UseConsul());
 
 var app = builder.Build();
 
@@ -50,7 +51,5 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapCarter();
-
-app.UseHttpsRedirection();
 
 app.Run();

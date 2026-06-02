@@ -1,10 +1,12 @@
 using Carter;
+using ContentPlatform.Api.Articles;
 using ContentPlatform.Api.Database;
 using ContentPlatform.Api.Extensions;
-using Contracts;
-using Curitis.EventBus;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Steeltoe.Common.Http.Discovery;
+using Steeltoe.Discovery.Client;
+using Steeltoe.Discovery.Consul;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +38,15 @@ builder.Services.AddEventBus(options =>
         configure.HostName = address.Host; //"contentplatform-mq"; //builder.Configuration.GetConnectionString("RabbitMQ")!;
     });
 });
+
+builder.Services.AddServiceDiscovery(o=>o.UseConsul());
+
+builder.Services.AddHttpClient<GetReportingArticle.Client>(client =>
+{
+    client.BaseAddress = new Uri("http://contentplatform-reporting-service");
+})
+.AddServiceDiscovery()
+.AddRoundRobinLoadBalancer();
 
 var app = builder.Build();
 
