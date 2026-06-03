@@ -4,6 +4,9 @@ using ContentPlatform.Api.Database;
 using ContentPlatform.Api.Extensions;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Steeltoe.Common.Http.Discovery;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Consul;
@@ -39,11 +42,39 @@ builder.Services.AddEventBus(options =>
     });
 });
 
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource.AddService("ContentPlatform.Api"))
+    .WithTracing(tracing =>
+    {
+        // 埋点
+        tracing
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            //.AddSqlClientInstrumentation()    // 如果是 PostgreSQL，建议注释掉，避免冲突
+            .AddRabbitMQInstrumentation()
+            .AddEntityFrameworkCoreInstrumentation(options =>
+            {
+                // 可以保留 Enrich 做额外增强
+                options.EnrichWithIDbCommand = (activity, command) =>
+                {
+                    foreach (NpgsqlParameter param in command.Parameters)
+                    {
+                        var value = param.Value?.ToString() ?? "(null)";
+                        activity.SetTag($"db.query.parameter.{param.ParameterName}", value);
+                    }
+                };
+            })
+            .AddNpgsql()
+            ;
+
+        tracing.AddOtlpExporter();
+    });
+
 builder.Services.AddServiceDiscovery(o=>o.UseConsul());
 
 builder.Services.AddHttpClient<GetReportingArticle.Client>(client =>
 {
-    client.BaseAddress = new Uri("http://contentplatform-reporting-service");
+    client.BaseAddress = new Uri("http://contentplatform-reporting-service:8080");
 })
 .AddServiceDiscovery()
 .AddRoundRobinLoadBalancer();

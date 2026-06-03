@@ -74,6 +74,7 @@ public static class CreateArticle
             // publish created event to message bus
             await _publisher.PublishAsync(new ArticleCreatedEvent
             {
+                ArticleId = article.Id,
                 CreatedOnUtc = article.CreatedOnUtc
             }, cancellationToken);
 

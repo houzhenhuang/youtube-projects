@@ -9,17 +9,17 @@ public class ArticleCreatedEventHandler(ILogger<ArticleCreatedEventHandler> logg
 {
     public async Task HandleAsync(ArticleCreatedEvent @event, CancellationToken cancellationToken)
     {
-        logger.LogInformation("文章创建完成：{EventId} {CreatedOnUtc}", @event.Id, @event.CreatedOnUtc);
+        logger.LogInformation("文章创建完成：{ArticleId} {CreatedOnUtc}", @event.ArticleId, @event.CreatedOnUtc);
 
         await dbContext.Articles.AddAsync(new Article
         {
-            Id = @event.Id,
+            Id = @event.ArticleId,
             CreatedOnUtc = @event.CreatedOnUtc
         }, cancellationToken);
 
         await dbContext.ArticleEvents.AddAsync(new ArticleEvent
         {
-            ArticleId = @event.Id,
+            ArticleId = @event.ArticleId,
             EventType = ArticleEventType.View,
             CreatedOnUtc = @event.CreatedOnUtc
         }, cancellationToken);

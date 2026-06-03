@@ -3,8 +3,11 @@ using ContentPlatform.Reporting.Api.Database;
 using ContentPlatform.Reporting.Api.Extensions;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Consul;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,6 +39,35 @@ builder.Services.AddEventBus(options =>
         configure.HostName = address.Host; //"contentplatform-mq"; //builder.Configuration.GetConnectionString("RabbitMQ")!;
     });
 });
+
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource.AddService("ContentPlatform.Reporting.Api"))
+    .WithTracing(tracing =>
+    {
+        // 埋点
+        tracing
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            //.AddSqlClientInstrumentation()    // 如果是 PostgreSQL，建议注释掉，避免冲突
+            .AddRabbitMQInstrumentation()
+            .AddEntityFrameworkCoreInstrumentation(options =>
+            {
+                // 可以保留 Enrich 做额外增强
+                options.EnrichWithIDbCommand = (activity, command) =>
+                {
+                    foreach (NpgsqlParameter param in command.Parameters)
+                    {
+                        var value = param.Value?.ToString() ?? "(null)";
+                        activity.SetTag($"db.query.parameter.{param.ParameterName}", value);
+                    }
+                };
+            })
+            .AddNpgsql()
+            ;
+
+        tracing.AddOtlpExporter();
+    });
+
 
 builder.Services.AddServiceDiscovery(o => o.UseConsul());
 
