@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/Solution Items/" />
+  <Folder Name="/src/">
+    <Project Path="CalConnect.Api/CalConnect.Api.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="UnitTests/UnitTests.csproj" />
+  </Folder>
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
+</Solution>
