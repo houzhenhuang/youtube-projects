@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CalConnect.Api.Extensions;
 
-public static class SeedData
+public static class MigrationExtensions
 {
     public static void ApplyMigrations(this WebApplication app)
     {

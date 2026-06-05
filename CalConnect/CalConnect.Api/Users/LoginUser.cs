@@ -1,14 +1,16 @@
-﻿using CalConnect.Api.Users.Infrastructure;
+﻿using CalConnect.Api.Database;
+using CalConnect.Api.Users.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
 namespace CalConnect.Api.Users;
 
-public sealed class LoginUser(IUserRepository userRepository, PasswordHasher passwordHasher)
+internal sealed class LoginUser(ApplicationDbContext context, PasswordHasher passwordHasher, TokenProvider tokenProvider)
 {
     public record Request(string Email, string Password);
 
-    public async Task<User> Handle(Request request)
+    public async Task<string> Handle(Request request)
     {
-        var user = await userRepository.GetByEmail(request.Email);
+        var user = await context.Users.SingleOrDefaultAsync(u => u.Email == request.Email);
         if (user is null || !user.EmailVerified)
         {
             throw new Exception("用户不存在");
@@ -19,6 +21,9 @@ public sealed class LoginUser(IUserRepository userRepository, PasswordHasher pas
         {
             throw new Exception("密码错误");
         }
-        return user;
+
+        string token = tokenProvider.Create(user);
+
+        return token;
     }
 }
