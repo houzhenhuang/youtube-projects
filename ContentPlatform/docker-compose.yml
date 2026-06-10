@@ -11,6 +11,10 @@ services:
     environment: 
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://contentplatform-jaeger:4317
       - OTEL_DOTNET_EXPERIMENTAL_EFCORE_ENABLE_TRACE_DB_QUERY_PARAMETERS=true
+    depends_on:
+      - contentplatform-db
+      - contentplatform-mq
+      - contentplatform-consul
 
   contentplatform-reporting-api:
     image: ${DOCKER_REGISTRY-}contentplatformreportingapi
@@ -24,6 +28,18 @@ services:
     environment: 
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://contentplatform-jaeger:4317
       - OTEL_DOTNET_EXPERIMENTAL_EFCORE_ENABLE_TRACE_DB_QUERY_PARAMETERS=true
+    depends_on:
+      - contentplatform-db
+      - contentplatform-mq
+      - contentplatform-consul
+
+  contentplatform-presentation:
+    image: contentplatform-ui:latest
+    container_name: ContentPlatform.Presentation
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "4000:80"
  
   contentplatform-db:
     image: postgres:latest
@@ -50,6 +66,7 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+
   contentplatform-jaeger:
     image: jaegertracing/all-in-one:latest
     container_name: ContentPlatform.Jaeger
@@ -57,9 +74,11 @@ services:
       - 4317:4317
       - 4318:4318
       - 16686:16686
+
   contentplatform-consul:
     image: hashicorp/consul:latest
     container_name: ContentPlatform.Consul
     ports:
       - 8500:8500
       - 8600:8600
+

@@ -1,7 +1,12 @@
 <Solution>
+  <Folder Name="/aspire/">
+    <Project Path="ContentPlatform.AppHost/ContentPlatform.AppHost.csproj" Id="db559e29-7ab9-4ea9-96ad-6c32f35f2e91" />
+    <Project Path="ContentPlatform.ServiceDefaults/ContentPlatform.ServiceDefaults.csproj" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="../../projects/repos/Curitis.EventBus/src/Curitis.EventBus.RabbitMQ/Curitis.EventBus.RabbitMQ.csproj" />
     <Project Path="ContentPlatform.Api/ContentPlatform.Api.csproj" />
+    <Project Path="ContentPlatform.Presentation/ContentPlatform.Presentation.csproj" Id="705b7ad3-c281-4ba7-9542-755cc4fd08c1" />
     <Project Path="ContentPlatform.Reporting.Api/ContentPlatform.Reporting.Api.csproj" />
     <Project Path="Contracts/Contracts.csproj" />
     <Project Path="Shared/Shared.csproj" />

@@ -41,6 +41,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\..\..\projects\repos\Curitis.EventBus\src\Curitis.EventBus.RabbitMQ\Curitis.EventBus.RabbitMQ.csproj" />
+	  <ProjectReference Include="..\ContentPlatform.ServiceDefaults\ContentPlatform.ServiceDefaults.csproj" />
 	  <ProjectReference Include="..\Contracts\Contracts.csproj" />
 	  <ProjectReference Include="..\Shared\Shared.csproj" />
 	</ItemGroup>

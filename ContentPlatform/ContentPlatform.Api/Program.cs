@@ -7,18 +7,20 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using Steeltoe.Common.Http.Discovery;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Consul;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.AddServiceDefaults();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(o => o.CustomSchemaIds(id => id.FullName!.Replace('+', '-')));
 builder.Services.AddCors();
 
 builder.Services.AddDbContext<ApplicationDbContext>(o =>
-    o.UseNpgsql(builder.Configuration.GetConnectionString("Database")));
+    //o.UseNpgsql(builder.Configuration.GetConnectionString("Database")));
+    o.UseNpgsql(builder.Configuration.GetConnectionString("contentplatform-db")));
 
 var assembly = typeof(Program).Assembly;
 
@@ -32,54 +34,58 @@ builder.Services.AddEventBus(options =>
 {
     options.UseRabbitMQ(configure =>
     {
-        Uri address = new(builder.Configuration.GetConnectionString("RabbitMQ")!);
+        //Uri address = new(builder.Configuration.GetConnectionString("RabbitMQ")!);
+        Uri address = new(builder.Configuration.GetConnectionString("contentplatform-mq")!);
         var userInfo = address.UserInfo.Split(":");
 
-        configure.UserName = userInfo[0]; // "guest"; // ÕË»§
-        configure.Password = userInfo[1]; //"guest"; // ÃÜÂë
-        configure.VirtualHost = "/"; // ÐéÄâÖ÷»ú
+        configure.UserName = userInfo[0]; // "guest"; // è´¦æˆ·
+        configure.Password = userInfo[1]; //"guest"; // å¯†ç 
+        configure.VirtualHost = "/"; // è™šæ‹Ÿä¸»æœº
         configure.HostName = address.Host; //"contentplatform-mq"; //builder.Configuration.GetConnectionString("RabbitMQ")!;
     });
 });
 
-builder.Services.AddOpenTelemetry()
-    .ConfigureResource(resource => resource.AddService("ContentPlatform.Api"))
-    .WithTracing(tracing =>
-    {
-        // Âñµã
-        tracing
-            .AddAspNetCoreInstrumentation()
-            .AddHttpClientInstrumentation()
-            //.AddSqlClientInstrumentation()    // Èç¹ûÊÇ PostgreSQL£¬½¨Òé×¢ÊÍµô£¬±ÜÃâ³åÍ»
-            .AddRabbitMQInstrumentation()
-            .AddEntityFrameworkCoreInstrumentation(options =>
-            {
-                // ¿ÉÒÔ±£Áô Enrich ×ö¶îÍâÔöÇ¿
-                options.EnrichWithIDbCommand = (activity, command) =>
-                {
-                    foreach (NpgsqlParameter param in command.Parameters)
-                    {
-                        var value = param.Value?.ToString() ?? "(null)";
-                        activity.SetTag($"db.query.parameter.{param.ParameterName}", value);
-                    }
-                };
-            })
-            .AddNpgsql()
-            ;
+//builder.Services.AddOpenTelemetry()
+//    .ConfigureResource(resource => resource.AddService("ContentPlatform.Api"))
+//    .WithTracing(tracing =>
+//    {
+//        // åŸ‹ç‚¹
+//        tracing
+//            .AddAspNetCoreInstrumentation()
+//            .AddHttpClientInstrumentation()
+//            //.AddSqlClientInstrumentation()    // å¦‚æžœæ˜¯ PostgreSQLï¼Œå»ºè®®æ³¨é‡ŠæŽ‰ï¼Œé¿å…å†²çª
+//            .AddRabbitMQInstrumentation()
+//            .AddEntityFrameworkCoreInstrumentation(options =>
+//            {
+//                // å¯ä»¥ä¿ç•™ Enrich åšé¢å¤–å¢žå¼º
+//                options.EnrichWithIDbCommand = (activity, command) =>
+//                {
+//                    foreach (NpgsqlParameter param in command.Parameters)
+//                    {
+//                        var value = param.Value?.ToString() ?? "(null)";
+//                        activity.SetTag($"db.query.parameter.{param.ParameterName}", value);
+//                    }
+//                };
+//            })
+//            .AddNpgsql()
+//            ;
 
-        tracing.AddOtlpExporter();
-    });
+//        tracing.AddOtlpExporter();
+//    });
 
-builder.Services.AddServiceDiscovery(o=>o.UseConsul());
+//builder.Services.AddServiceDiscovery(o=>o.UseConsul());
 
 builder.Services.AddHttpClient<GetReportingArticle.Client>(client =>
-{
-    client.BaseAddress = new Uri("http://contentplatform-reporting-service:8080");
-})
-.AddServiceDiscovery()
-.AddRoundRobinLoadBalancer();
+    {
+        //client.BaseAddress = new Uri("http://contentplatform-reporting-service:8080");// docker compose
+        client.BaseAddress = new Uri("https+http://contentplatform-reporting-api"); // aspire
+    })
+    .AddServiceDiscovery();
+//.AddRoundRobinLoadBalancer();
 
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 if (app.Environment.IsDevelopment())
 {
@@ -92,7 +98,7 @@ if (app.Environment.IsDevelopment())
 
 app.MapCarter();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.Run();
 
