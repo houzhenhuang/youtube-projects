@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="Messaging.Contracts/Messaging.Contracts.csproj" />
+    <Project Path="Orders.Api/Orders.Api.csproj" />
+    <Project Path="Shipping.Api/Shipping.Api.csproj" />
+  </Folder>
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
+</Solution>
