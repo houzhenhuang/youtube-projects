@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Blogs.Api/Blogs.Api.csproj" />
+  <Project Path="FullTextSearch.AppHost/FullTextSearch.AppHost.csproj" />
+  <Project Path="FullTextSearch.ServiceDefaults/FullTextSearch.ServiceDefaults.csproj" />
+</Solution>
