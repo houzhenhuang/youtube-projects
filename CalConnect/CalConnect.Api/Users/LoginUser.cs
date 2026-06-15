@@ -1,4 +1,5 @@
 ﻿using CalConnect.Api.Database;
+using CalConnect.Api.Endpoints;
 using CalConnect.Api.Users.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,5 +26,19 @@ internal sealed class LoginUser(ApplicationDbContext context, PasswordHasher pas
         string token = tokenProvider.Create(user);
 
         return token;
+    }
+}
+
+public class LoginUserEndpoint : IEndpoint
+{
+    public void Map(IEndpointRouteBuilder app)
+    {
+        app.MapPost("api/users/login", async (LoginUser.Request request, LoginUser loginUser) =>
+            {
+                var user = await loginUser.Handle(request);
+
+                return Results.Ok(user);
+            })
+            .WithTags(UserEndpoints.Tag);
     }
 }

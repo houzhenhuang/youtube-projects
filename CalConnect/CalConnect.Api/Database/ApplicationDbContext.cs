@@ -1,4 +1,5 @@
-﻿using CalConnect.Api.Users;
+﻿using CalConnect.Api.Meetings;
+using CalConnect.Api.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace CalConnect.Api.Database;
@@ -12,6 +13,8 @@ public class ApplicationDbContext : DbContext
     }
 
     public DbSet<User> Users { get; set; }
+
+    public DbSet<Meeting> Meetings { get; set; }
 
     public DbSet<EmailVerificationToken> EmailVerificationTokens { get; set; }
 

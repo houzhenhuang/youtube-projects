@@ -1,4 +1,5 @@
 ﻿using CalConnect.Api.Database;
+using CalConnect.Api.Endpoints;
 using CalConnect.Api.Users.Infrastructure;
 using FluentEmail.Core;
 using Microsoft.EntityFrameworkCore;
@@ -7,8 +8,8 @@ using Npgsql;
 namespace CalConnect.Api.Users;
 
 internal class RegisterUser(
-    ApplicationDbContext context, 
-    PasswordHasher passwordHasher, 
+    ApplicationDbContext context,
+    PasswordHasher passwordHasher,
     IFluentEmail fluentEmail,
     EmailVerificationLinkFactory emailVerificationLinkFactory)
 {
@@ -66,5 +67,19 @@ internal class RegisterUser(
         // Access token
 
         return user;
+    }
+}
+
+public class RegisterUserEndpoint : IEndpoint
+{
+    public void Map(IEndpointRouteBuilder app)
+    {
+        app.MapPost("api/users/register", async (RegisterUser.Request request, RegisterUser registerUser) =>
+            {
+                var user = await registerUser.Handle(request);
+
+                return Results.Ok(user);
+            })
+            .WithTags(UserEndpoints.Tag);
     }
 }
