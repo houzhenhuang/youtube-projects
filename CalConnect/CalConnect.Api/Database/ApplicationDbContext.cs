@@ -18,6 +18,8 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<EmailVerificationToken> EmailVerificationTokens { get; set; }
 
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);

@@ -7,9 +7,11 @@ namespace CalConnect.Api.Users;
 
 internal sealed class LoginUser(ApplicationDbContext context, PasswordHasher passwordHasher, TokenProvider tokenProvider)
 {
-    public record Request(string Email, string Password);
+    public sealed record Request(string Email, string Password);
 
-    public async Task<string> Handle(Request request)
+    public sealed record Response(string AccessToken, string RefreshToken);
+
+    public async Task<Response> Handle(Request request)
     {
         var user = await context.Users.SingleOrDefaultAsync(u => u.Email == request.Email);
         if (user is null || !user.EmailVerified)
@@ -25,7 +27,19 @@ internal sealed class LoginUser(ApplicationDbContext context, PasswordHasher pas
 
         string token = tokenProvider.Create(user);
 
-        return token;
+        var refreshToken = new RefreshToken
+        {
+            Id = Guid.NewGuid(),
+            UserId = user.Id,
+            Token = tokenProvider.GenerateRefreshToken(),
+            ExpiresOnUtc = DateTime.UtcNow.AddDays(7)
+        };
+
+        context.RefreshTokens.Add(refreshToken);
+
+        await context.SaveChangesAsync();
+
+        return new Response(token, refreshToken.Token);
     }
 }
 
@@ -33,9 +47,9 @@ public class LoginUserEndpoint : IEndpoint
 {
     public void Map(IEndpointRouteBuilder app)
     {
-        app.MapPost("api/users/login", async (LoginUser.Request request, LoginUser loginUser) =>
+        app.MapPost("api/users/login", async (LoginUser.Request request, LoginUser useCase) =>
             {
-                var user = await loginUser.Handle(request);
+                var user = await useCase.Handle(request);
 
                 return Results.Ok(user);
             })

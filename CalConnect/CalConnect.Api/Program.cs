@@ -58,10 +58,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.AddHttpContextAccessor();
+
 builder.Services.AddScoped<RegisterUser>();
 builder.Services.AddScoped<LoginUser>();
-builder.Services.AddScoped<GetUser>();
+builder.Services.AddScoped<LoginUserWithRefreshToken>();
+builder.Services.AddScoped<RevokeRefreshTokens>();
 builder.Services.AddScoped<VerifyEmail>();
+builder.Services.AddScoped<GetUser>();
+
+builder.Services.AddScoped<CreateMeeting>();
 
 builder.Services.AddScoped<MeetingPolicyService>();
 builder.Services.AddScoped<IEmailService,EmailService>();

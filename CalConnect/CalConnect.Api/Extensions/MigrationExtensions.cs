@@ -7,15 +7,15 @@ public static class MigrationExtensions
 {
     public static void ApplyMigrations(this WebApplication app)
     {
-        //using var scope = app.Services.CreateScope();
-        //var serviceProvider = scope.ServiceProvider;
+        using var scope = app.Services.CreateScope();
+        var serviceProvider = scope.ServiceProvider;
 
-        //var dbContext = serviceProvider.GetRequiredService<ApplicationDbContext>();
+        var dbContext = serviceProvider.GetRequiredService<ApplicationDbContext>();
         //if (dbContext.Database.EnsureCreated())
         //{
         //    return;
         //}
 
-        //dbContext.Database.Migrate();
+        dbContext.Database.Migrate();
     }
 }

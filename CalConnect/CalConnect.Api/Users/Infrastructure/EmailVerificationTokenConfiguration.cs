@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CalConnect.Api.Users.Infrastructure;
 
 internal sealed class EmailVerificationTokenConfiguration: IEntityTypeConfiguration<EmailVerificationToken>
 {
-    public void Configure(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<EmailVerificationToken> builder)
+    public void Configure(EntityTypeBuilder<EmailVerificationToken> builder)
     {
         builder.HasKey(e => e.Id);
 
