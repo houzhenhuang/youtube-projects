@@ -430,3 +430,5 @@ FodyWeavers.xsd
 
 */.containers
 */.idea
+/Async.APIs/ThumbnailGenerator/uploads/images
+/Async.APIs/ThumbnailGenerator/sixlabors.lic
