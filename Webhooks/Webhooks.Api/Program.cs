@@ -1,17 +1,23 @@
+using Microsoft.EntityFrameworkCore;
+using Webhooks.Api.Data;
+using Webhooks.Api.Extensions;
 using Webhooks.Api.Models;
-using Webhooks.Api.Repositories;
 using Webhooks.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
+
 builder.Services.AddOpenApi();
 
-builder.Services.AddSingleton<InMemoryOrderRepository>();
-builder.Services.AddSingleton<InMemoryWebhookSubscriptionRepository>();
+builder.Services.AddDbContext<WebhooksDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("webhooks")));
 
-builder.Services.AddHttpClient<WebhookDispatcher>();
+builder.Services.AddScoped<WebhookDispatcher>();
 
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 if (app.Environment.IsDevelopment())
 {
@@ -20,15 +26,17 @@ if (app.Environment.IsDevelopment())
     {
         options.SwaggerEndpoint("/openapi/v1.json", "OpenAPI V1");
     });
+
+    await app.ApplyMigrationsAsync();
 }
 
 app.UseHttpsRedirection();
 
 // https://webhook.site/  这个站点用于测试webhook注册
 
-app.MapPost("webhooks/subscriptions", (
+app.MapPost("webhooks/subscriptions", async (
     CreateWebhookRequest request,
-    InMemoryWebhookSubscriptionRepository subscriptionRepository) =>
+    WebhooksDbContext dbContext) =>
 {
     var subscription = new WebhookSubscription(
         Guid.NewGuid(),
@@ -36,19 +44,22 @@ app.MapPost("webhooks/subscriptions", (
         request.WebhookUrl,
         DateTime.UtcNow);
 
-    subscriptionRepository.Add(subscription);
+    dbContext.WebhookSubscriptions.Add(subscription);
+
+    await dbContext.SaveChangesAsync();
 
     return Results.Ok(subscription);
 });
 
 app.MapPost("/orders", async (
         CreateOrderRequest request,
-        InMemoryOrderRepository orderRepository,
+        WebhooksDbContext dbContext,
         WebhookDispatcher webhookDispatcher) =>
 {
     var order = new Order(Guid.NewGuid(), request.CustomerName, request.Amount, DateTime.UtcNow);
 
-    orderRepository.Add(order);
+    dbContext.Orders.Add(order);
+    await dbContext.SaveChangesAsync();
 
     await webhookDispatcher.DispatchAsync("order.created", order);
 
@@ -56,10 +67,9 @@ app.MapPost("/orders", async (
 })
 .WithTags("Orders");
 
-app.MapGet("/orders", (InMemoryOrderRepository orderRepository) =>
+app.MapGet("/orders", async (WebhooksDbContext dbContext) =>
     {
-
-        return Results.Ok(orderRepository.GetAll());
+        return Results.Ok(await dbContext.Orders.ToListAsync());
     })
     .WithTags("Orders");
 

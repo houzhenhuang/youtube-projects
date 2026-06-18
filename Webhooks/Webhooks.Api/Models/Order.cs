@@ -2,6 +2,10 @@
 
 public class Order
 {
+    public Order()
+    {
+        
+    }
     public Order(Guid id, string customerName, decimal amount, DateTime createAt)
     {
         Id = id;
