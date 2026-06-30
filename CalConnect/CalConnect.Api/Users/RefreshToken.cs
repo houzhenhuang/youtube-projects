@@ -1,6 +1,6 @@
 ﻿namespace CalConnect.Api.Users;
 
-public class RefreshToken
+internal class RefreshToken
 {
     public Guid Id { get; set; }
     public string Token { get; set; }

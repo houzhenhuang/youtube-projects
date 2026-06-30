@@ -22,7 +22,7 @@ internal sealed class LoginUserWithRefreshToken(ApplicationDbContext context, To
             throw new ApplicationException("该 refresh token 已过期");
         }
 
-        string accessToken = tokenProvider.Create(refreshToken.User);
+        string accessToken = await tokenProvider.Create(refreshToken.User);
 
         refreshToken.Token = tokenProvider.GenerateRefreshToken();
         refreshToken.ExpiresOnUtc = DateTime.UtcNow.AddDays(7);

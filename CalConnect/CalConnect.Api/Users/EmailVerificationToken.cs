@@ -1,6 +1,6 @@
 ﻿namespace CalConnect.Api.Users;
 
-public sealed class EmailVerificationToken
+internal sealed class EmailVerificationToken
 {
     public Guid Id { get; set; }
 

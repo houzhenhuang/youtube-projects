@@ -4,6 +4,7 @@ using CalConnect.Api.Endpoints;
 using CalConnect.Api.Extensions;
 using CalConnect.Api.Meetings;
 using CalConnect.Api.Meetings.Infrastructure;
+using CalConnect.Api.Roles;
 using CalConnect.Api.Users;
 using CalConnect.Api.Users.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -30,7 +31,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(o =>
     o.UseNpgsql(builder.Configuration.GetConnectionString("Database")).UseSnakeCaseNamingConvention());
 
 builder.Services.AddSingleton<PasswordHasher>();
-builder.Services.AddSingleton<TokenProvider>();
+builder.Services.AddScoped<TokenProvider>();
 builder.Services.AddScoped<EmailVerificationLinkFactory>();
 
 builder.Services.AddHttpContextAccessor();
@@ -66,6 +67,10 @@ builder.Services.AddScoped<LoginUserWithRefreshToken>();
 builder.Services.AddScoped<RevokeRefreshTokens>();
 builder.Services.AddScoped<VerifyEmail>();
 builder.Services.AddScoped<GetUser>();
+
+builder.Services.AddScoped<GetRoles>();
+builder.Services.AddScoped<CreateRole>();
+builder.Services.AddScoped<UpdateRole>();
 
 builder.Services.AddScoped<CreateMeeting>();
 

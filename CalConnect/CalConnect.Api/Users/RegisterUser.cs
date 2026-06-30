@@ -1,5 +1,6 @@
 ﻿using CalConnect.Api.Database;
 using CalConnect.Api.Endpoints;
+using CalConnect.Api.Roles.Domain;
 using CalConnect.Api.Users.Infrastructure;
 using FluentEmail.Core;
 using Microsoft.EntityFrameworkCore;
@@ -30,8 +31,14 @@ internal class RegisterUser(
             LastName = request.LastName,
             PasswordHash = passwordHasher.Hash(request.Password)
         };
-
         context.Users.Add(user);
+
+        var userRole = new UserRole
+        {
+            UserId = user.Id,
+            RoleId = Role.MemberId
+        };
+        context.UserRoles.Add(userRole);
 
         DateTime utcNow = DateTime.UtcNow;
         var verificationToken = new EmailVerificationToken

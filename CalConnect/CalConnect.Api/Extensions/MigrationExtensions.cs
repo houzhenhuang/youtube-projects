@@ -11,10 +11,6 @@ public static class MigrationExtensions
         var serviceProvider = scope.ServiceProvider;
 
         var dbContext = serviceProvider.GetRequiredService<ApplicationDbContext>();
-        //if (dbContext.Database.EnsureCreated())
-        //{
-        //    return;
-        //}
 
         dbContext.Database.Migrate();
     }

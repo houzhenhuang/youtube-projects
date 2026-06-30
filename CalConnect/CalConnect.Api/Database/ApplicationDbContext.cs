@@ -1,10 +1,11 @@
 ﻿using CalConnect.Api.Meetings;
+using CalConnect.Api.Roles.Domain;
 using CalConnect.Api.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace CalConnect.Api.Database;
 
-public class ApplicationDbContext : DbContext
+internal sealed class ApplicationDbContext : DbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
@@ -13,6 +14,8 @@ public class ApplicationDbContext : DbContext
     }
 
     public DbSet<User> Users { get; set; }
+    public DbSet<Role> Roles { get; set; }
+    public DbSet<UserRole> UserRoles { get; set; }
 
     public DbSet<Meeting> Meetings { get; set; }
 

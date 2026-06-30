@@ -1,6 +1,6 @@
 ﻿namespace CalConnect.Api.Users;
 
-public class User
+internal class User
 {
     public Guid Id { get; set; }
 

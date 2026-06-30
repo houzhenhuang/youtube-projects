@@ -25,7 +25,7 @@ internal sealed class LoginUser(ApplicationDbContext context, PasswordHasher pas
             throw new Exception("密码错误");
         }
 
-        string token = tokenProvider.Create(user);
+        string token = await tokenProvider.Create(user);
 
         var refreshToken = new RefreshToken
         {
