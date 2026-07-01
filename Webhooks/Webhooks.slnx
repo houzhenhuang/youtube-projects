@@ -4,4 +4,6 @@
     <Project Path="Webhooks.ServiceDefaults/Webhooks.ServiceDefaults.csproj" />
   </Folder>
   <Project Path="Webhooks.Api/Webhooks.Api.csproj" />
+  <Project Path="Webhooks.Contracts/Webhooks.Contracts.csproj" Id="98205fc2-8e26-4e37-8b90-9a1b20f2badf" />
+  <Project Path="Webhooks.Processing/Webhooks.Processing.csproj" />
 </Solution>

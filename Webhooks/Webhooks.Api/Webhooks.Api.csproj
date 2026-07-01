@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Webhooks.Contracts\Webhooks.Contracts.csproj" />
     <ProjectReference Include="..\Webhooks.ServiceDefaults\Webhooks.ServiceDefaults.csproj" />
   </ItemGroup>
 

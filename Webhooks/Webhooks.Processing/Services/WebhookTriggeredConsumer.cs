@@ -2,11 +2,11 @@
 using MassTransit.Courier.Contracts;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
-using Webhooks.Api.Data;
-using Webhooks.Api.Models;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using Webhooks.Contracts;
+using Webhooks.Processing.Data;
+using Webhooks.Processing.Models;
 
-namespace Webhooks.Api.Services;
+namespace Webhooks.Processing.Services;
 
 internal sealed class WebhookTriggeredConsumer(
     IHttpClientFactory httpClientFactory,
