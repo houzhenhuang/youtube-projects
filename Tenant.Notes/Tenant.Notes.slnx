@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/aspire/">
+    <Project Path="src/Tenant.Notes.AppHost/Tenant.Notes.AppHost.csproj" />
+    <Project Path="src/Tenant.Notes.ServiceDefaults/Tenant.Notes.ServiceDefaults.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Notes.Api/Notes.Api.csproj" />
+  </Folder>
+</Solution>
