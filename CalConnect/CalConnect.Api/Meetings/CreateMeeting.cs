@@ -1,4 +1,5 @@
 ﻿using CalConnect.Api.Database;
+using CalConnect.Api.Endpoints;
 using CalConnect.Api.Users;
 using Microsoft.EntityFrameworkCore;
 
@@ -102,5 +103,19 @@ internal sealed class CreateMeeting(
             .Where(m => m.Participants.Any(p => p.UserId == userId))
             .Where(m => m.StartTime < meeting.EndTime && m.EndTime > meeting.StartTime)
             .AnyAsync();
+    }
+
+    internal sealed class Endpoint : IEndpoint
+    {
+        public void Map(IEndpointRouteBuilder app)
+        {
+            app.MapPost("api/meetings", async (Request request, CreateMeeting useCase) =>
+            {
+                Guid meetingId = await useCase.Handle(request);
+                return Results.Created($"api/meetings/{meetingId}", meetingId);
+            })
+            .WithTags(MeetingEndpoints.Tag)
+            .RequireAuthorization();
+        }
     }
 }
