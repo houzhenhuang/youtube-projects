@@ -1,0 +1,17 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Orders/">
+    <Project Path="src/eShop.Orders.Api/eShop.Orders.Api.csproj" />
+    <Project Path="src/eShop.Orders.PublicApi/eShop.Orders.PublicApi.csproj" Id="fe2cab7e-3b32-4a65-845a-de5eda4b5c2a" />
+  </Folder>
+  <Folder Name="/src/Products/">
+    <Project Path="src/eShop.Products.Api/eShop.Products.Api.csproj" Id="168efc00-1fa2-4b18-a025-2c28c16efd64" />
+    <Project Path="src/eShop.Products.Public.Api/eShop.Products.Public.Api.csproj" Id="c3e8c1a3-b5a9-41f7-8e6b-4ecc2cddcdcb" />
+  </Folder>
+  <Folder Name="/src/Shipping/">
+    <Project Path="src/eShop.Shipping.Api/eShop.Shipping.Api.csproj" Id="1c39c559-8764-4fb7-a137-a4d057dc84d2" />
+  </Folder>
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
+</Solution>

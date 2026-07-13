@@ -1,0 +1,74 @@
+services:
+  eshop.orders.api:
+    image: ${DOCKER_REGISTRY-}eshopordersapi
+    container_name: eshop-orders-api
+    build:
+      context: .
+      dockerfile: src/eShop.Orders.Api/Dockerfile
+    environment:
+      - ConnectionStrings__Database=Host=postgres;Port=5432;Database=eshop;Username=postgres;Password=postgres
+      - ConnectionStrings__Queue=amqp://guest:guest@rabbitmq:5672
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspire-dashboard:18889
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+    ports:
+      - 5001:8081
+
+  eshop.shipping.api:
+    image: ${DOCKER_REGISTRY-}eshopshippingapi
+    container_name: eshop-shipping-api
+    build:
+      context: .
+      dockerfile: src/eShop.Shipping.Api/Dockerfile
+    environment:
+      - ConnectionStrings__Database=Host=postgres;Port=5432;Database=eshop;Username=postgres;Password=postgres
+      - ConnectionStrings__Queue=amqp://guest:guest@rabbitmq:5672
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspire-dashboard:18889
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+    ports:
+      - 5003:8081
+
+  eshop.products.api:
+    image: ${DOCKER_REGISTRY-}eshopproductsapi
+    container_name: eshop-products-api
+    build:
+      context: .
+      dockerfile: src/eShop.Products.Api/Dockerfile
+    environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://aspire-dashboard:18889
+      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+    ports:
+      - 5005:8081
+  
+  postgres:
+    image: postgres:17
+    container_name: eshop-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./.containers/db:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  aspire-dashboard:
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:latest
+    container_name: aspire-dashboard
+    environment:
+      DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS: true
+    ports:
+      - "18888:18888"
+  
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    container_name: eshop-rabbitmq
+    hostname: rabbitmq
+    volumes:
+      - ./.containers/queue/data/:/var/lib/rabbitmq
+      - ./.containers/queue/log/:/var/log/rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
